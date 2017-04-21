@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户登录</title>
+</head>
+<script type="text/javascript" src="access/js/jquery-1.4.2.js"></script>
+<script type="text/javascript">
+	function changeImg(img) {
+		img.src = img.src + "?time=" + new Date().getTime();
+	}
+</script>
+
+<script type="text/javascript">
+	window.onload = function() {
+		var str = decodeURI('${cookie.remname.value}');
+		document.getElementsByName("username")[0].value = str;
+	}
+</script>
+
+<script type="text/javascript">
+	window.onload = function() { //ajax异步传输获取后台json的值用于提示用户
+		$("input[type='text'][name='valistr']").blur(
+				function() {
+					$.post("CheckLoginServlet", {
+						'username' : $("#username").val(),
+						'password' : $("#password").val(),
+						'valistr' : $("#valistr").val(),
+					}, function(data) {
+						var json = eval("(" + data + ")"); //返回一个json对象
+						if (json.stat == 0)
+							$("#username_msg").html(
+									"<font color='red'> " + json.msg
+											+ "</font>");
+						else if (json.stat == 1)
+							$("#username_msg").html(
+									"<font color='green'> " + json.msg
+											+ "</font>");
+						else if (json.stat == 2)
+							$("#username_msg").html(
+									"<font color='red'> " + json.msg
+											+ "</font>");
+					});
+				});
+	}
+</script>
+<body>
+	<div align="center">
+		<h1>登录</h1>
+		<hr>
+		<!-- <font color="red">${msg }</font> -->
+		<form method="POST" action="LoginServlet">
+			<table>
+				<tr>
+					<td>账号:</td>
+					<td><input type="text" name="username" id="username" /></td>
+					<td id="username_msg"></td>
+				</tr>
+				<tr>
+					<td>密码:</td>
+					<td><input type="password" name="password" id="password" /></td>
+				</tr>
+				<tr>
+					<td>验证码:</td>
+					<td><input type="text" name="valistr" id="valistr" /></td>
+					<td><img src="ValiImg" onclick="changeImg(this)"
+						style="cursor: pointer;" /></td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" name="remname" value="true" />
+						记住账号</td>
+				</tr>
+				<tr>
+
+					<td colspan="2"><input type="submit" value="登录" name="lg" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>
